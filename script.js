@@ -29,7 +29,13 @@ function playRound(playerSelection, computerSelection) {
 
 }
 
-const playerSelection = "rock";
-const computerSelection = computerPlay();
+function game() {
+    let playerScore = 0;
+    let computerScore = 0;
 
-console.log(playRound(playerSelection, computerSelection));
+    // loop and run play round function every iteration
+    // for each loop i want to ask the user for his answer
+    // if the value of playRound() includes the word lose then add point to computerScore
+    // else add it to playerScore
+    // at the end of the loop return the winner
+}
