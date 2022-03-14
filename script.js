@@ -59,4 +59,4 @@ function game() {
     console.log(`Player: ${playerScore} vs Computer: ${computerScore}`);
 }
 
-game();
+// game();
