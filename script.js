@@ -9,6 +9,8 @@ function computerPlay() {
 
 function playerPlay() {
     const playerResult = prompt("Your turn!");
+
+    // if (playerResult === "") return an error message to the user
     
     return playerResult;
 }
