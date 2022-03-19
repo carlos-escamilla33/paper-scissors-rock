@@ -1,74 +1,97 @@
-const GAMECHOICES = ["rock", "paper", "scissors"]
-const playerChoicesData = document.querySelectorAll("[data-option]");
-let computerScore = 0;
-let playerScore = 0;
+const GAMECHOICES = [
+    {
+        choice: "paper",
+        beats: "rock",
+    },
+    {
+        choice: "rock",
+        beats: "scissors",
+    },
+    {
+        choice: "scissors",
+        beats: "paper",
+    }
+];
+const playerBtns = document.querySelectorAll("button");
+const playerScoreSpan = document.querySelector("[data-player-score]");
+const computerScoreSpan = document.querySelector("[data-computer-score]");
+const resultDiv = document.querySelector("#result");
+const btnDiv = document.querySelector(".btn-container");
+const resetBtn = document.createElement("button");
 
-playerChoicesData.forEach((element => {
-    element.addEventListener("click", handlePlayerClick);
-}));
+function handlePlayerClick(e) {
+    const selectionName = e.target.dataset.option;
+    const playerSelection = GAMECHOICES.find(option => option.choice === selectionName);
+    playerPlay(playerSelection);
+}
 
 function computerPlay() {
     const randomIdx = Math.floor(Math.random() * GAMECHOICES.length);
-    const computerResult = GAMECHOICES[randomIdx];
-    return computerResult;
+    const computerChoice = GAMECHOICES[randomIdx];
+    return computerChoice;
 }
 
-function handlePlayerClick(e) {
-    e.preventDefault();
-    const playerSelection = e.target.getAttribute("data-option");
+function playerPlay(selection) {
     const computerSelection = computerPlay();
-    console.log(`player: ${playerSelection}`, `computer: ${computerSelection}`)
+    const youAreRoundWinner = isRoundWinner(selection, computerSelection);
+    const computerRoundWinner = isRoundWinner(computerSelection, selection);
 
-    const roundResult = playRound(playerSelection, computerSelection)
+    appendPlayerChoices(selection, computerSelection);
 
-   checkRoundWinner(roundResult);
-
-   checkGameWinner(playerScore, computerScore);
-
-    console.log(`Player: ${playerScore} vs Computer: ${computerScore}`);
-}
-
-function playRound(playerSelection, computerSelection) {
-
-    if (playerSelection === "rock" && computerSelection === "scissors") {
-        return "You Win! Rock beats Scissors";
-    } else if (playerSelection === "paper" && computerSelection === "rock") {
-        return "You Win! Paper beats Rock";
-    } else if (playerSelection === "scissors" && computerSelection === "paper") {
-        return "You Win! Scissors beats Paper";
-    } else if (playerSelection === "rock" && computerSelection === "paper") {
-        return "You Lose! Paper beats Rock"
-    } else if (playerSelection === "scissors" && computerSelection === "rock") {
-        return "You Lose! Rock beats Scissors";
-    } else if (playerSelection === "paper" && computerSelection === "scissors") {
-        return "You Lose! Scissors beats Paper";
-    } else {
-        return "It's a tie!";
-    }
+    updateScores(youAreRoundWinner, computerRoundWinner);
 
 }
 
-function checkRoundWinner(roundResult) {
-    if (roundResult.includes("Lose")) {
-        computerScore += 1;
-    } else if (roundResult.includes("Win")) {
-        playerScore++;
+function isRoundWinner(selection, opponentSelection) {
+    return selection.beats === opponentSelection.choice;
+}
+
+function gameWinner(score, player) {
+    const currentScore = parseInt(score);
+    if (currentScore === 5) {
+        resultDiv.innerHTML = `${player} is the winner!`;
+        addResetBtn();
     }
 }
 
-// function game(roundResult) {
-//     let playerScore = 0;
-//     let computerScore = 0;
+function addResetBtn() {
+    resetBtn.textContent = "Reset Game";
+    resetBtn.classList.add("enabledResetBtn")
+    btnDiv.appendChild(resetBtn);
+}
 
-//     const roundResult = playRound()
+function updateScores(youAreRoundWinner, computerRoundWinner) {
+    playerScoreSpan.textContent = parseInt(playerScoreSpan.textContent);
+    computerScoreSpan.textContent = parseInt(computerScoreSpan.textContent);
+    if (youAreRoundWinner) {
+        playerScoreSpan.textContent++;
+    } else if (computerRoundWinner) {
+        computerScoreSpan.textContent++;
+    }
 
-//     if (roundResult.includes("Lose")) {
-//         computerScore += 1;
-//     } else if (roundResult.includes("Win")) {
-//         playerScore++;
-//     }
+    gameWinner(computerScoreSpan.textContent, "Computer");
+    gameWinner(playerScoreSpan.textContent, "You");
+}
 
-//     console.log(`Player: ${playerScore} vs Computer: ${computerScore}`);
-// }
+function capitalize(word) {
+    return word.choice.toUpperCase();
+}
 
-// game();
+function appendPlayerChoices(playerSelection, computerSelection) {
+    const capPlayerSelection = capitalize(playerSelection);
+    const capComputerSelection = capitalize(computerSelection);
+    resultDiv.textContent = `${capPlayerSelection} vs ${capComputerSelection}`;
+}
+
+playerBtns.forEach((button => {
+    button.addEventListener("click", handlePlayerClick);
+}));
+
+resetBtn.addEventListener("click", () => {
+    resultDiv.textContent = "";
+    playerScoreSpan.textContent = "0";
+    computerScoreSpan.textContent = "0";
+    resetBtn.classList.remove("enabledResetBtn");
+    resetBtn.remove();
+});
+
